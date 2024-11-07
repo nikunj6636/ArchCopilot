@@ -1,0 +1,7 @@
+backend/__pycache__/
+venv
+archai_btp-backend.tar
+archai_btp-frontend.tar
+archai_btp-data_init.tar
+nginx.tar
+docker-compose_forUser.yml

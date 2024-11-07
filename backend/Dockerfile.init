@@ -1,0 +1,11 @@
+FROM python:3.10-slim
+
+WORKDIR /data
+
+# Copy your initial data here
+COPY ./ADR_chatHistory ./chat_history
+COPY ./ADR_chatTitles ./chat_titles
+COPY ./ADR_sources ./sources
+COPY ./faiss_index ./faiss_index
+
+CMD ["echo", "Data initialization complete"]

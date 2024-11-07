@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+  data_init:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.init
+    volumes:
+      - chat_history:/data/chat_history
+      - chat_titles:/data/chat_titles
+      - sources:/data/sources
+      - faiss_index:/data/faiss_index
+
+  backend:
+    build: ./backend
+    user: root
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000 || exit 1"]
+    restart: unless-stopped
+    volumes:
+      - chat_history:/home/backend/ADR_chatHistory
+      - chat_titles:/home/backend/ADR_chatTitles
+      - sources:/home/backend/ADR_sources
+      - faiss_index:/home/backend/faiss_index
+    networks:
+      - web-network
+    depends_on:
+      - data_init
+
+  frontend:
+    build: ./frontend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+    networks:
+      - web-network
+
+  nginx:
+    image: nginx
+    container_name: webserver
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/local.conf:/etc/nginx/nginx.conf
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
+
+volumes:
+  chat_history:
+  chat_titles:
+  sources:
+  faiss_index:
